@@ -22,7 +22,7 @@ contract Raffletest is Test {
     uint32 callbackgaslimit;
     address link;
     address public PLAYER = makeAddr("player");
-    uint256 public constant STARTING_MINIMUM_BALANCE = 10 ether;
+    uint256 constant STARTING_MINIMUM_BALANCE = 10 ether;
 
     function setUp() external {
         DeployRaffle deployRaffle = new DeployRaffle();
@@ -39,6 +39,10 @@ contract Raffletest is Test {
         ) = _helperconfig.activeNetworkConfig();
         vm.deal(PLAYER, 10 ether);
     }
+
+    ///////////////////////////////////////////////
+    //////////// ->enterraffle<- //////////////////
+    ///////////////////////////////////////////////
 
     function testraffleintialstate() public view {
         assert(_raffle.getRafflestate() == raffle.Rafflestate.open);
@@ -73,15 +77,35 @@ contract Raffletest is Test {
         vm.prank(PLAYER);
 
         _raffle.enterraffle{value: enteryfee}();
-      
+
         vm.warp(block.timestamp + intervel + 1);
         vm.roll(block.number + 1);
         _raffle.performUpkeep("");
-    
 
         vm.expectRevert(raffle.ruffle__closed.selector);
         vm.prank(PLAYER);
-         _raffle.enterraffle{value: enteryfee}();
+        _raffle.enterraffle{value: enteryfee}();
+    }
+    ///////////////////////////////////////////////
+    //////////// -> checkUpkeep <- ////////////////
+    ///////////////////////////////////////////////
+
+    // 1test. hasBalance==0; and making all true
+    
+    function checkUpkeepReturnsFalseOn0balance() public  {
+        //making the timepassed = true
       
+        vm.warp(block.timestamp + intervel + 1);//incresing the block time
+        vm.roll(block.number + 1);// idk
+
+        // isopen is intially to the open as we r not interfeering with other thing
+        // the process states should be open
+
+        //as we payed the entry fee which leads us as a single player so hasPlayer true
+         (bool t,)=_raffle.checkUpkeep("");
+        // console.log("kkk");
+       assertEq( t , true);
+
+
     }
 }

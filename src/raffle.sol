@@ -119,7 +119,10 @@ contract raffle is VRFConsumerBaseV2 {
         bool isOpen = Rafflestate.open == s_state;
         bool hasBalance = address(this).balance > 0;
         bool hasPlayer = s_players.length > 0;
-       
+        console.log(timepassed,"timepassed");
+       console.log(isOpen,"isOpen");
+       console.log(hasBalance,"hasBalance");
+       console.log(hasPlayer,"hasPlayer");
         upkeepNeeded = (timepassed && isOpen && hasBalance && hasPlayer);
         return (upkeepNeeded, "0x0");
     }

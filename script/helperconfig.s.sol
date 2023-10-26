@@ -24,7 +24,7 @@ contract Helperconfig is Script {
         else activeNetworkConfig = getAnvilconfig();
     }
 
-    function getSepoliaconfig() public returns (Networkconfig memory) {
+    function getSepoliaconfig() pure public returns (Networkconfig memory) {
         return
             Networkconfig({
                 enteryfee: 0.01 ether,
@@ -65,7 +65,7 @@ contract Helperconfig is Script {
             });
     }
 
-    function getEtherconfig() public returns (Networkconfig memory) {
+    function getEtherconfig() pure public returns (Networkconfig memory) {
         return
             Networkconfig({
                 enteryfee: 0.01 ether,
