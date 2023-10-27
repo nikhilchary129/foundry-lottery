@@ -8,6 +8,8 @@ import {LinkToken} from "../test/mocks/LInkToken.sol";
 
 
 contract Helperconfig is Script {
+    uint256 public constant ANVIL_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
+
     struct Networkconfig {
         uint256 enteryfee;
         uint256 intervel;
@@ -16,6 +18,7 @@ contract Helperconfig is Script {
         uint64 subscriptionId;
         uint32 callbackgaslimit;
         address links;
+        uint256 devolperkey;
     }
     Networkconfig public activeNetworkConfig;
 
@@ -24,16 +27,17 @@ contract Helperconfig is Script {
         else activeNetworkConfig = getAnvilconfig();
     }
 
-    function getSepoliaconfig() pure public returns (Networkconfig memory) {
+    function getSepoliaconfig() public returns (Networkconfig memory) {
         return
             Networkconfig({
                 enteryfee: 0.01 ether,
                 intervel: 60,
                 vrfcoordinator: 0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625,
                 gaslane: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,
-                subscriptionId: 0, //gonna change
+                subscriptionId: 1893, //gonna change
                 callbackgaslimit: 2500000,
-                links: 0x779877A7B0D9E8603169DdbD7836e478b4624789
+                links: 0x779877A7B0D9E8603169DdbD7836e478b4624789,
+                devolperkey: vm.envUint("PRIVATE_KEY")
             });
     }
 
@@ -60,21 +64,12 @@ contract Helperconfig is Script {
                 gaslane: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,
                 subscriptionId:  0, //gonna change
                 callbackgaslimit: 2500000,
-                links:address(link)
+                links:address(link),
+                devolperkey:ANVIL_PRIVATE_KEY
+                
              
             });
     }
 
-    function getEtherconfig() pure public returns (Networkconfig memory) {
-        return
-            Networkconfig({
-                enteryfee: 0.01 ether,
-                intervel: 60,
-                vrfcoordinator: 0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625,
-                gaslane: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,
-                subscriptionId: 0, //gonna change
-                callbackgaslimit: 2500000,
-                links:0x514910771AF9Ca656af840dff83E8264EcF986CA
-            });
-    }
+   
 }
