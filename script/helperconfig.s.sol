@@ -9,6 +9,8 @@ import {LinkToken} from "../test/mocks/LInkToken.sol";
 
 contract Helperconfig is Script {
     uint256 public constant ANVIL_PRIVATE_KEY=0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
+    //0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38
+    //0x23a0328ca573e37ed4a511cb855d53cc30f232383a0c02835e86c8f934c10af6
 
     struct Networkconfig {
         uint256 enteryfee;
@@ -34,7 +36,7 @@ contract Helperconfig is Script {
                 intervel: 60,
                 vrfcoordinator: 0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625,//0x8103B0A8A00be2DDC778e6e7eaa21791Cd364625
                 gaslane: 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c,
-                subscriptionId: 1893, //gonna change
+                subscriptionId: 0, //gonna change
                 callbackgaslimit: 2500000,
                 links: 0x779877A7B0D9E8603169DdbD7836e478b4624789,
                 devolperkey: vm.envUint("PRIVATE_KEY") 

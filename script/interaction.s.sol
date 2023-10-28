@@ -21,7 +21,7 @@ contract CreateSubscription is Script {
         address vrfcoordinator,
         uint256 deployerkey
     ) public returns (uint64) {
-        vm.startBroadcast();
+        vm.startBroadcast(deployerkey);
 
         uint64 subid = VRFCoordinatorV2Mock(vrfcoordinator)
             .createSubscription();
@@ -46,18 +46,21 @@ contract FundSubscription is Script {
             uint64 subid,
             ,
             address link,
+            uint256 deployerkey
 
         ) = helperconfig.activeNetworkConfig();
-        fundSubscription(vrfcoordinator, subid, link);
+        fundSubscription(vrfcoordinator, subid, link,deployerkey);
     }
 
     function fundSubscription(
         address vrfcoordinator,
         uint64 subid,
-        address link
+        address link,
+        uint256 deployerkey
+
     ) public {
         if (block.chainid == 31337) {
-            vm.startBroadcast();
+            vm.startBroadcast(deployerkey);
             VRFCoordinatorV2Mock(vrfcoordinator).fundSubscription(
                 subid,
                 FUND_AMOUNT
@@ -65,7 +68,7 @@ contract FundSubscription is Script {
 
             vm.stopBroadcast();
         } else {
-            vm.startBroadcast();
+            vm.startBroadcast(deployerkey);
             LinkToken(link).transferAndCall(
                 vrfcoordinator,
                 FUND_AMOUNT,

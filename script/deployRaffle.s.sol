@@ -37,7 +37,8 @@ contract DeployRaffle is Script {
             fundSubscription.fundSubscription(
                 vrfcoordinator,
                 subscriptionId,
-                link
+                link,
+                deployerkey
             );
         }
         vm.startBroadcast(deployerkey);
