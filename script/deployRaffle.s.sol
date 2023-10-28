@@ -31,7 +31,7 @@ contract DeployRaffle is Script {
         if (subscriptionId == 0) {
             CreateSubscription createSubscription = new CreateSubscription();
             subscriptionId = createSubscription.createSubscription(
-                vrfcoordinator
+                vrfcoordinator,deployerkey
             );
             FundSubscription fundSubscription = new FundSubscription();
             fundSubscription.fundSubscription(
@@ -49,6 +49,7 @@ contract DeployRaffle is Script {
             subscriptionId,
             callbackgaslimit
         );
+        
         vm.stopBroadcast();
         AddConsumer addConsumer = new AddConsumer();
         addConsumer.addconsumer(
