@@ -1,7 +1,7 @@
 ## Quickstart
 ```shell
 $ git clone https://github.com/nikhilchary129/foundry-lottery
-$ cd ffoundry-lottery
+$ cd foundry-lottery
 $ forge build
 ```
 
