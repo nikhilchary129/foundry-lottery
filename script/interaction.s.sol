@@ -47,9 +47,8 @@ contract FundSubscription is Script {
             ,
             address link,
             uint256 deployerkey
-
         ) = helperconfig.activeNetworkConfig();
-        fundSubscription(vrfcoordinator, subid, link,deployerkey);
+        fundSubscription(vrfcoordinator, subid, link, deployerkey);
     }
 
     function fundSubscription(
@@ -57,7 +56,6 @@ contract FundSubscription is Script {
         uint64 subid,
         address link,
         uint256 deployerkey
-
     ) public {
         if (block.chainid == 31337) {
             vm.startBroadcast(deployerkey);
@@ -91,13 +89,16 @@ contract AddConsumer is Script {
         uint256 deployerkey
     ) public {
         vm.startBroadcast(deployerkey);
-        console.log(msg.sender);
-        VRFCoordinatorV2Mock(vrfcoordinator).addConsumer(subid, contractToAddToVrf);
-        
+      
+        VRFCoordinatorV2Mock(vrfcoordinator).addConsumer(
+            subid,
+            contractToAddToVrf
+        );
+
         vm.stopBroadcast();
     }
 
-    function addConsumerUsingConfig(address contractToAddToVrf) public {
+    function addConsumerUsingConfig(address mostRecentlyDeployed) public {
         Helperconfig helperconfig = new Helperconfig();
         (
             ,
@@ -109,15 +110,15 @@ contract AddConsumer is Script {
             ,
             uint256 deployerkey
         ) = helperconfig.activeNetworkConfig();
-        
-        addconsumer(contractToAddToVrf, vrfcoordinator, subid, deployerkey);
+
+        addconsumer(mostRecentlyDeployed, vrfcoordinator, subid, deployerkey);
     }
 
     function run() external {
-        address contractToAddToVrf = DevOpsTools.get_most_recent_deployment(
+        address mostRecentlyDeployed = DevOpsTools.get_most_recent_deployment(
             "raffle",
             block.chainid
         );
-        addConsumerUsingConfig(contractToAddToVrf);
+        addConsumerUsingConfig(mostRecentlyDeployed);
     }
 }

@@ -158,9 +158,14 @@ contract Raffletest is Test {
     ///////////////////////////////////////////////
     //////////// -> fulfillRandomWords <- ////////////////
     ///////////////////////////////////////////////
+    modifier skipfork{
+        if(block.chainid !=31337) return;
+
+        _;
+    }
     function testfulfillRandomWordsCanOnlyBeCalledBYVRfcoordinator(
         uint256 randomRequestId
-    ) public {
+    ) public  prank changetime  skipfork{
         vm.expectRevert("nonexistent request");
         VRFCoordinatorV2Mock(vrfcoordinator).fulfillRandomWords(
             randomRequestId,
@@ -172,6 +177,7 @@ contract Raffletest is Test {
         public
         prank
         changetime
+        skipfork
     {
         uint256 intialplayer = 1;
         uint256 additionalentry = 5;
@@ -188,10 +194,12 @@ contract Raffletest is Test {
 
         vm.recordLogs();
         _raffle.performUpkeep("");
-        uint256 contractBalanceIntially = address(_raffle).balance;
 
+        uint256 contractBalanceIntially = address(_raffle).balance;
         Vm.Log[] memory entries = vm.getRecordedLogs();
+
         bytes32 requestId = entries[1].topics[1];
+        console.logBytes32(requestId);
         uint256 prevtimestamp = _raffle.getprevTimeStamp();
         VRFCoordinatorV2Mock(vrfcoordinator).fulfillRandomWords( //pretending to be the chainlink vrf
             uint256(requestId),
@@ -210,3 +218,16 @@ contract Raffletest is Test {
         assert(prevtimestamp < _raffle.getprevTimeStamp());
     }
 }
+/**
+ *
+ *  [([0x63373d1c4696214b898952999c9aaec57dac1ee2723cec59bea6888f489a9772, 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c, 0x0000000000000000000000000000000000000000000000000000000000001976, 0x000000000000000000000000a0b10d1205feca000c0ad9d3e03c7564b5897ddd],
+ * 0x1754f8c4f29d18ea9b781dbb177d292fa52bbe87855fff40d63cf6b9f43f8acaae1da1a3b1d7a2105781d7f8c510b1aefaab57282c90161ae71bdab8279181af000000000000000000000000000000000000000000000000000000000000000300000000000000000000000000000000000000000000000000000000002625a00000000000000000000000000000000000000000000000000000000000000001),
+ *  ([0xcd6e45c8998311cab7e9d4385596cac867e20a0587194b954fa3a731c93ce78b, 0x1754f8c4f29d18ea9b781dbb177d292fa52bbe87855fff40d63cf6b9f43f8aca], 0x)]
+ *
+ *
+ * [([0x63373d1c4696214b898952999c9aaec57dac1ee2723cec59bea6888f489a9772, 0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c, 0x0000000000000000000000000000000000000000000000000000000000000001, 0x000000000000000000000000dc64a140aa3e981100a9beca4e685f962f0cf6c9],
+ *  0x000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000640000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000007a1200000000000000000000000000000000000000000000000000000000000000001), 
+ * ([0xcd6e45c8998311cab7e9d4385596cac867e20a0587194b954fa3a731c93ce78b, 0x0000000000000000000000000000000000000000000000000000000000000001], 0x)]
+ *
+ *
+ */

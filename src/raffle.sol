@@ -27,8 +27,9 @@ import {VRFConsumerBaseV2} from "@chainlink/contracts/src/v0.8/VRFConsumerBaseV2
 import {Helperconfig} from "../script/helperconfig.s.sol";
 
 import {Test, console} from "forge-std/Test.sol";
+
 /**
- * 
+ *
  * @title
  * @author
  * @notice this contract iffor creating sample raffle
@@ -62,9 +63,9 @@ contract raffle is VRFConsumerBaseV2 {
 
     //events // we use event to emit the data so that it will be easy to retrive in front end
 
-    event enterRaffle(address indexed player); 
+    event enterRaffle(address indexed player);
     event winnerpicker(address indexed s_recentWinner);
-
+    event RequestedRaffleWinner(uint256 indexed requestId);
 
     constructor(
         uint256 enteryfee,
@@ -88,7 +89,7 @@ contract raffle is VRFConsumerBaseV2 {
         if (s_state == Rafflestate.calculating) revert ruffle__closed();
         if (msg.value < i_enteryfee) revert ruffle__notenoughETH();
         s_players.push(payable(msg.sender)); //payable allow to pay in future
-        
+
         emit enterRaffle(msg.sender);
     }
 
@@ -102,27 +103,25 @@ contract raffle is VRFConsumerBaseV2 {
         s_players = new address payable[](0);
         s_prevtimestamp = block.timestamp;
         s_state = Rafflestate.open;
-        
+
         (bool success, ) = winner.call{value: address(this).balance}("");
         if (!success) revert Raffle__transferFailed();
 
         emit winnerpicker(s_recentWinner);
     }
 
-    function checkUpkeep(bytes memory /* perfirmdata */)
-        public
-        view
-        returns (bool upkeepNeeded, bytes memory /* performData */)
-    {
+    function checkUpkeep(
+        bytes memory /* perfirmdata */
+    ) public view returns (bool upkeepNeeded, bytes memory /* performData */) {
         bool timepassed = (block.timestamp - s_prevtimestamp >= i_interval);
-        
+
         bool isOpen = Rafflestate.open == s_state;
         bool hasBalance = address(this).balance > 0;
         bool hasPlayer = s_players.length > 0;
-        console.log(timepassed,"timepassed");
-       console.log(isOpen,"isOpen");
-       console.log(hasBalance,"hasBalance");
-       console.log(hasPlayer,"hasPlayer");
+        console.log(timepassed, "timepassed");
+        console.log(isOpen, "isOpen");
+        console.log(hasBalance, "hasBalance");
+        console.log(hasPlayer, "hasPlayer");
         upkeepNeeded = (timepassed && isOpen && hasBalance && hasPlayer);
         return (upkeepNeeded, "0x0");
     }
@@ -132,13 +131,15 @@ contract raffle is VRFConsumerBaseV2 {
         if (!upkeepNeeded) revert Raffle__UpkeepNotNeeded();
         s_state = Rafflestate.calculating;
 
-        i_vrfcoordinator.requestRandomWords(
+        uint256 reqestedid = i_vrfcoordinator.requestRandomWords(
             i_gaslane, //gas line
             i_subscriptionId,
             REQUEST_CONFIRMATIONS,
             i_callbackgaslimit,
             NUM_WORDS
         );
+          console.log(reqestedid,"resquest id");
+        emit RequestedRaffleWinner(reqestedid);
     }
 
     //getterfunction
@@ -146,19 +147,24 @@ contract raffle is VRFConsumerBaseV2 {
     function getEnteranceFee() external view returns (uint256) {
         return i_enteryfee;
     }
-     function getRafflestate() external view returns (Rafflestate) {
+
+    function getRafflestate() external view returns (Rafflestate) {
         return s_state;
     }
+
     function getRafflePlayer(uint256 index) external view returns (address) {
         return s_players[index];
     }
-     function getRafflePlayerLength() external view returns (uint256) {
+
+    function getRafflePlayerLength() external view returns (uint256) {
         return s_players.length;
     }
-    function getprevTimeStamp() external view returns (uint256){
+
+    function getprevTimeStamp() external view returns (uint256) {
         return s_prevtimestamp;
     }
-    function getRafflePrevWinner()external view returns (address){
+
+    function getRafflePrevWinner() external view returns (address) {
         return s_recentWinner;
     }
 }
